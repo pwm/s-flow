@@ -13,7 +13,7 @@ use function sprintf;
 class FSM
 {
     /** @var Transition[][] */
-    private $graph = [];
+    protected $graph = [];
 
     public function __construct(array $states)
     {
