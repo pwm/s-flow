@@ -1,0 +1,5 @@
+# for common files/dirs (eg.: .idea) create a global gitignore file (eg. ~/.gitignore_global) and run
+# git config --global core.excludesfile ~/.gitignore_global
+composer.lock
+phpunit.xml
+vendor/
