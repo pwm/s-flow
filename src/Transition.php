@@ -24,8 +24,14 @@ class Transition
         Closure $condition = null
     ) {
         $this->event = $event;
-        $this->from = $from;
-        $this->to = $to;
+
+        if ($from !== null) {
+            $this->from = $from;
+        }
+        if ($to !== null) {
+            $this->to = $to;
+        }
+
         $this->condition = $condition;
     }
 
