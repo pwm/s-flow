@@ -75,7 +75,7 @@ $trafficLight = new TrafficLight(); // Red
 $trafficLight->change('Black'); // Excuse me?
 ```
 
-This is bad but easily fixable by restricting the set of possible states, eg. introducing a `Colours` enum class instead of an arbitrary `string`. We won't show that here, we'll just assume that from now on all states we use are from the set of valid states, namely Red, Yellow and Green.
+This is bad but easily fixable by restricting the set of possible states, eg. introducing a `Colours` enum class instead of an arbitrary `string`. We won't show that here, we'll just assume that from now on all states we use are from the set of valid states, namely `Red`, `Yellow` and `Green`.
 
 There is however another issue, which is less clear at first:
 
@@ -90,6 +90,9 @@ Nothing says that we can't transition from one state to any other (from the set 
 Let's go ahead and fix it using S-Flow:
 
 ```php
+use Pwm\SFlow\FSM;
+use Pwm\SFlow\Transition;
+
 class TrafficLight {
     /** @var string */
     private $colour;
@@ -123,7 +126,9 @@ That's quite a mouthful. Let's see what's going on here. We have changed 2 thing
  * We introduced a finite state machine (FSM) to control state transition
  * We can now only change state indirectly, by supplying a list of events
 
-If we look at the FSM it's pretty self-explanatory. It gets a set of allowed states and a set of transitions between them. We define that a traffic light can go from Red to Green (via the "Go" event), from Green to Yellow (via the "Slow" event) and from Yellow to Red (via the "Stop" event) and that's it. It can't go for example from Green to Red as there's no such transition. This is pretty neat as now we can't make a mistake. If we supply an out-of-order event then the state stays the same.
+If we look at the FSM it's pretty self-explanatory. It gets a set of allowed states and a set of transitions between them. We define that a traffic light can go from `Red` to `Green` (via the `Go` event), from `Green` to `Yellow` (via the `Slow` event) and from `Yellow` to `Red` (via the `Stop` event) and that's it. It can't go for example from `Green` to `Red` as there's no such transition. 
+
+This is pretty neat as now we can't make mistakes like we did before. If we supply an out-of-order event then the state stays the same:
 
 ```php
 $trafficLight = new TrafficLight(); // Red
@@ -141,6 +146,8 @@ $trafficLight->change('Go', 'Slow', 'Stop'); // Red again
 ```
 
 Finally we can make a transition conditional by supplying a predicate function to it (a predicate is a function that returns true or false).
+
+Let's make our `TrafficLight` handle newer models with extra features:
 
 ```php
 class TrafficLight {
@@ -180,19 +187,19 @@ class TrafficLight {
 }
 ```
 
-Now our `TrafficLight` can handle newer models with extra features. The older models work as before.
-
-```php
-$trafficLight = new TrafficLight('old'); // Red
-$trafficLight->change('Prepare'); // Still Red, it's an old model
-$trafficLight->change('Go'); // Green
-```
-
-A newer model got an extra state in which both Red and Yellow are lit, meaning "prepare to go".
+Newer models got an extra state, called `RedYellow `, in which both the red and yellow lights are lit, meaning "prepare to go":
 
 ```php
 $trafficLight = new TrafficLight('new'); // Red
 $trafficLight->change('Prepare'); // RedYellow, as it's a new model
+$trafficLight->change('Go'); // Green
+```
+
+The older models, however, work the same as before:
+
+```php
+$trafficLight = new TrafficLight('old'); // Red
+$trafficLight->change('Prepare'); // Still Red, it's an old model
 $trafficLight->change('Go'); // Green
 ```
  
