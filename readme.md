@@ -75,7 +75,7 @@ $trafficLight = new TrafficLight(); // Red
 $trafficLight->change('Black'); // Excuse me?
 ```
 
-This is bad but easily fixable by restricting the set of possible states, eg. introducing a `Colours` enum class instead of an arbitrary `string`. We won't show that here, we'll just assume that from now on all states we use are from the set of valid states, namely `Red`, `Yellow` and `Green`.
+This is bad but easily fixable by restricting the set of possible states, eg. introducing a `Colours` enum class instead of an arbitrary `string`. I won't do that here, we'll just assume that from now on all states we use are from the set of valid states, namely `Red`, `Yellow` and `Green`.
 
 There is however another issue, which is less clear at first:
 
