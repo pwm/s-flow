@@ -1,6 +1,6 @@
 {
     "name": "pwm/s-flow",
-    "description": "A small state machine library with conditional transitions",
+    "description": "A lightweight library for defining state machines that supports conditional transitions",
     "type": "library",
     "keywords": ["fsm", "state-machine", "event-sourcing"],
     "homepage": "https://github.com/pwm/s-flow",

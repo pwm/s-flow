@@ -6,7 +6,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7d68d8bee2ecbcf3277c/test_coverage)](https://codeclimate.com/github/pwm/s-flow/test_coverage)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-S-Flow is a small library for defining finite state machines (FSM). Once defined we can run them to derive some final state given a start state and a list of events. Transitions between states can be made conditional by supplying predicate functions to them.
+S-Flow is a lightweight library for defining finite state machines (FSM). Once defined we can run them to derive some final state given a start state and a list of events. Transitions between states can be made conditional by supplying predicate functions to them.
 
 ## Table of Contents
 
