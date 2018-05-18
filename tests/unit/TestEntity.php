@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Pwm\Fsm;
+namespace Pwm\SFlow;
 
 class TestEntity
 {

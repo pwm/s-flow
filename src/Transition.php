@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Pwm\Fsm;
+namespace Pwm\SFlow;
 
 use Closure;
-use Pwm\Fsm\Exception\IncompleteTransition;
+use Pwm\SFlow\Exception\IncompleteTransition;
 
 class Transition
 {

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Pwm\Fsm;
+namespace Pwm\SFlow;
 
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +17,7 @@ final class FSMTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Pwm\Fsm\Exception\MissingState
+     * @expectedException \Pwm\SFlow\Exception\MissingState
      */
     public function it_throws_when_creating_with_no_states(): void
     {
@@ -26,7 +26,7 @@ final class FSMTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Pwm\Fsm\Exception\MissingState
+     * @expectedException \Pwm\SFlow\Exception\MissingState
      */
     public function it_throws_if_adding_a_transition_with_a_nonexistent_from_state(): void
     {
@@ -35,7 +35,7 @@ final class FSMTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Pwm\Fsm\Exception\MissingState
+     * @expectedException \Pwm\SFlow\Exception\MissingState
      */
     public function it_throws_if_adding_a_transition_with_a_nonexistent_to_state(): void
     {
@@ -44,7 +44,7 @@ final class FSMTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Pwm\Fsm\Exception\DuplicateEvent
+     * @expectedException \Pwm\SFlow\Exception\DuplicateEvent
      */
     public function it_throws_on_duplicate_transitions_between_states(): void
     {

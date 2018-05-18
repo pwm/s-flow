@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Pwm\Fsm\Exception;
+namespace Pwm\SFlow\Exception;
 
 use RuntimeException;
 

@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Pwm\\Fsm\\": "src/"
+            "Pwm\\SFlow\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Pwm\\Fsm\\": "tests/unit/"
+            "Pwm\\SFlow\\": "tests/unit/"
         }
     },
     "extra": {

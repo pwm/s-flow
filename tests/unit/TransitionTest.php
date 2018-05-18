@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Pwm\Fsm;
+namespace Pwm\SFlow;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
-use Pwm\Fsm\Exception\IncompleteTransition;
+use Pwm\SFlow\Exception\IncompleteTransition;
 use Throwable;
 
 final class TransitionTest extends TestCase

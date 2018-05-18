@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Pwm\Fsm;
+namespace Pwm\SFlow;
 
 use Closure;
-use Pwm\Fsm\Exception\DuplicateEvent;
-use Pwm\Fsm\Exception\MissingState;
+use Pwm\SFlow\Exception\DuplicateEvent;
+use Pwm\SFlow\Exception\MissingState;
 use function array_reduce;
 use function count;
 use function sprintf;
