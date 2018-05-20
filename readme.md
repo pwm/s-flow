@@ -94,10 +94,10 @@ use Pwm\SFlow\FSM;
 use Pwm\SFlow\Transition;
 
 class TrafficLight {
-    /** @var string */
-    private $colour;
     /** @var FSM */
     private $fsm;
+    /** @var string */
+    private $colour;
 
     public function __construct() {
         $this->fsm = $this->setupFSM();
@@ -145,18 +145,18 @@ $trafficLight = new TrafficLight(); // Red
 $trafficLight->change('Go', 'Slow', 'Stop'); // Red again
 ```
 
-Finally we can make a transition conditional by supplying a predicate function to it (a predicate is a function that returns true or false).
+Sometimes we only want to change state if some condition is fulfilled. We can make transitions conditional by supplying predicate function to them (a predicate is a function that returns true or false).
 
 Let's make our `TrafficLight` handle newer models with extra features:
 
 ```php
 class TrafficLight {
+    /** @var FSM */
+    private $fsm;
     /** @var string */
     private $model;
     /** @var string */
     private $colour;
-    /** @var FSM */
-    private $fsm;
 
     public function __construct(string $model = 'old') {
         $this->fsm = $this->setupFSM();
@@ -205,11 +205,11 @@ $trafficLight->change('Go'); // Green
  
 ## How it works
 
-A state machine is essentially a directed graph, where nodes are states and arrows are transitions between them. Transitions are labelled and we call those labels events. 
+A state machine is essentially a directed graph, where nodes are states and arrows are transitions between them. Transitions are labelled so that we can indetify them and we call those labels events. 
 
-Deriving a state means walking the graph from some start state via a set of transitions leading to the destination state, either reaching it or stopping when there's no way forward.
+Deriving a state means walking the graph from a given start state via a set of transitions leading to some desired destination state, either reaching it or stopping when there's no way forward.
 
-Transitions can be conditional to allow more flexible definitions. A conditional transition is one with a corresponding predicate function. It can only be travelled if its predicate evaluates to true.
+Transitions can be made conditional. A conditional transition is one with a corresponding predicate function and it can only be travelled if its predicate evaluates to true.
 
 ## Tests
 
