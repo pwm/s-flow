@@ -85,7 +85,7 @@ $trafficLight->change('Green'); // Green
 $trafficLight->change('Red'); // Red, but what happened to Yellow?
 ```
 
-Nothing says that we can't transition from one state to any other (from the set of allowed states), hence we can easily create the above situation, causing chaos on the road.
+Nothing says that we can't transition from one state to any other from the set of allowed states, hence we can easily create the above situation where from `Green` we switch straight to `Red`, causing chaos on the road.
 
 Let's go ahead and fix it using S-Flow:
 
@@ -100,7 +100,7 @@ class TrafficLight {
     private $fsm;
 
     public function __construct() {
-        $this->setupFSM();
+        $this->fsm = $this->setupFSM();
         $this->colour = 'Red';
     }
 
@@ -112,8 +112,8 @@ class TrafficLight {
         return $this->colour;
     }
 
-    private function setupFSM(): void {
-        $this->fsm = (new FSM(['Red', 'Yellow', 'Green']))
+    private function setupFSM(): FSM {
+        return (new FSM(['Red', 'Yellow', 'Green']))
             ->addTransition((new Transition('Go'))->from('Red')->to('Green'))
             ->addTransition((new Transition('Slow'))->from('Green')->to('Yellow'))
             ->addTransition((new Transition('Stop'))->from('Yellow')->to('Red'));
@@ -123,8 +123,8 @@ class TrafficLight {
 
 That's quite a mouthful. Let's see what's going on here. We have changed 2 things:
 
- * We introduced a finite state machine (FSM) to control state transition
- * We can now only change state indirectly, by supplying a list of events
+ * We introduced a finite state machine (FSM) to control transitions between states.
+ * We can now only change state indirectly, by supplying a list of events. Events are just names for transitions between states.
 
 If we look at the FSM it's pretty self-explanatory. It gets a set of allowed states and a set of transitions between them. We define that a traffic light can go from `Red` to `Green` (via the `Go` event), from `Green` to `Yellow` (via the `Slow` event) and from `Yellow` to `Red` (via the `Stop` event) and that's it. It can't go for example from `Green` to `Red` as there's no such transition. 
 
@@ -158,9 +158,9 @@ class TrafficLight {
     /** @var FSM */
     private $fsm;
 
-    public function __construct(string $model) {
+    public function __construct(string $model = 'old') {
+        $this->fsm = $this->setupFSM();
         $this->model = $model;
-        $this->setupFSM();
         $this->colour = 'Red';
     }
 
@@ -172,12 +172,12 @@ class TrafficLight {
         return $this->colour;
     }
 
-    private function setupFSM(): void {
+    private function setupFSM(): FSM {
         $newModel = function (): bool {
             return $this->model  === 'new';
         };
 
-        $this->fsm = (new FSM(['Red', 'Yellow', 'Green', 'RedYellow']))
+        return (new FSM(['Red', 'Yellow', 'Green', 'RedYellow']))
             ->addTransition((new Transition('Prepare'))->from('Red')->given($newModel)->to('RedYellow'))
             ->addTransition((new Transition('Go'))->from('Red')->to('Green'))
             ->addTransition((new Transition('Go'))->from('RedYellow')->to('Green'))
@@ -198,7 +198,7 @@ $trafficLight->change('Go'); // Green
 The older models, however, work the same as before:
 
 ```php
-$trafficLight = new TrafficLight('old'); // Red
+$trafficLight = new TrafficLight(); // Red
 $trafficLight->change('Prepare'); // Still Red, it's an old model
 $trafficLight->change('Go'); // Green
 ```
