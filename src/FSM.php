@@ -47,17 +47,19 @@ class FSM
         return $this;
     }
 
-    public function deriveState(string $state, array $events): string
+    public function deriveState(string $startState, array $events): StateOp
     {
-        return array_reduce($events, function (string $state, string $event): string {
-            return $this->transition($state, $event);
-        }, $state);
+        return array_reduce($events, function (StateOp $stateOp, string $event): StateOp {
+            return $stateOp->isSuccess()
+                ? $this->transition($stateOp->getState(), $event)
+                : $stateOp;
+        }, StateOp::success($startState));
     }
 
-    private function transition(string $from, string $event): string
+    private function transition(string $from, string $event): StateOp
     {
         if (! isset($this->graph[$from][$event])) {
-            return $from;
+            return StateOp::failure($from);
         }
 
         $transition = $this->graph[$from][$event];
@@ -65,10 +67,10 @@ class FSM
         $condition = $transition->getCondition();
         if ($condition instanceof Closure) {
             return $condition()
-                ? $transition->getTo()
-                : $from;
+                ? StateOp::success($transition->getTo())
+                : StateOp::failure($from);
         }
 
-        return $transition->getTo();
+        return StateOp::success($transition->getTo());
     }
 }

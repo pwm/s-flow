@@ -87,7 +87,9 @@ $trafficLight->change('Red'); // Red, but what happened to Yellow?
 
 Nothing says that we can't transition from one state to any other from the set of allowed states, hence we can easily create the above situation where from `Green` we switch straight to `Red`, causing chaos on the road.
 
-Let's go ahead and fix it using S-Flow:
+#### Introducing S-Flow
+
+Let's go ahead and fix this:
 
 ```php
 use Pwm\SFlow\FSM;
@@ -105,7 +107,9 @@ class TrafficLight {
     }
 
     public function change(string ...$events): void {
-        $this->colour = $this->fsm->deriveState($this->colour, $events);
+        $this->colour = $this->fsm
+            ->deriveState($this->colour, $events)
+            ->getState();
     }
 
     public function getColour(): string {
@@ -145,6 +149,24 @@ $trafficLight = new TrafficLight(); // Red
 $trafficLight->change('Go', 'Slow', 'Stop'); // Red again
 ```
 
+#### The result of a state change
+
+`deriveState()` returns a `StateOp` object, which is a wrapper for the resulting state coupled with an indicator whether our transition(s) succeeded or failed. This is why in the above example we call `getState()` on the result in our `change()` function.
+
+Say we want to react to a transition failure, eg. throw an exception, then we could just modify our `change()` method:
+
+```php
+    public function change(string ...$events): void {
+        $op = $this->fsm->deriveState($this->colour, $events);
+        if (! $op->isSuccess()) {
+            throw new \RuntimeException('Invalid state change attempt!');
+        }
+        $this->colour = $op->getState();
+    }
+```
+
+#### Conditional transitions
+
 Sometimes we only want to change state if some condition is fulfilled. We can make transitions conditional by supplying predicate function to them (a predicate is a function that returns true or false).
 
 Let's make our `TrafficLight` handle newer models with extra features:
@@ -165,7 +187,9 @@ class TrafficLight {
     }
 
     public function change(string ...$events): void {
-        $this->colour = $this->fsm->deriveState($this->colour, $events);
+        $this->colour = $this->fsm
+            ->deriveState($this->colour, $events)
+            ->getState();
     }
 
     public function getColour(): string {

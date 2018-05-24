@@ -63,12 +63,29 @@ final class FSMTest extends TestCase
             ->addTransition((new Transition('E1'))->from('S1')->to('S2'))
             ->addTransition((new Transition('E2'))->from('S2')->to('S3'));
 
-        self::assertSame('S1', $fsm->deriveState('S1', []));
-        self::assertSame('S2', $fsm->deriveState('S1', ['E1']));
-        self::assertSame('S3', $fsm->deriveState('S1', ['E1', 'E2']));
-        self::assertSame('S2', $fsm->deriveState('S2', []));
-        self::assertSame('S3', $fsm->deriveState('S2', ['E2']));
-        self::assertSame('S3', $fsm->deriveState('S3', []));
+        $op = $fsm->deriveState('S1', []);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S1', $op->getState());
+
+        $op = $fsm->deriveState('S1', ['E1']);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S2', $op->getState());
+
+        $op = $fsm->deriveState('S1', ['E1', 'E2']);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S3', $op->getState());
+
+        $op = $fsm->deriveState('S2', []);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S2', $op->getState());
+
+        $op = $fsm->deriveState('S2', ['E2']);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S3', $op->getState());
+
+        $op = $fsm->deriveState('S3', []);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S3', $op->getState());
     }
 
     /**
@@ -83,10 +100,21 @@ final class FSMTest extends TestCase
             ->addTransition((new Transition($event))->from('S2')->to('S3'))
             ->addTransition((new Transition($event))->from('S3')->to('S1'));
 
-        self::assertSame('S1', $fsm->deriveState('S1', []));
-        self::assertSame('S2', $fsm->deriveState('S1', ['E1']));
-        self::assertSame('S3', $fsm->deriveState('S1', ['E1', 'E1']));
-        self::assertSame('S1', $fsm->deriveState('S1', ['E1', 'E1', 'E1']));
+        $op = $fsm->deriveState('S1', []);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S1', $op->getState());
+
+        $op = $fsm->deriveState('S1', ['E1']);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S2', $op->getState());
+
+        $op = $fsm->deriveState('S1', ['E1', 'E1']);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S3', $op->getState());
+
+        $op = $fsm->deriveState('S1', ['E1', 'E1', 'E1']);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S1', $op->getState());
     }
 
     /**
@@ -97,7 +125,9 @@ final class FSMTest extends TestCase
         $fsm = (new FSM(['S1', 'S2', 'S3']))
             ->addTransition((new Transition('E1'))->from('S2')->to('S3'));
 
-        self::assertSame('S1', $fsm->deriveState('S1', ['E1']));
+        $op = $fsm->deriveState('S1', ['E1']);
+        self::assertFalse($op->isSuccess());
+        self::assertSame('S1', $op->getState());
     }
 
     /**
@@ -112,17 +142,14 @@ final class FSMTest extends TestCase
             ->addTransition((new Transition('E1'))->from('S1')->given($always)->to('S2'))
             ->addTransition((new Transition('E2'))->from('S2')->given($never)->to('S3'));
 
-        // can always go S1 --E1--> S2, but can never go S2 --E2--> S3
-        self::assertSame('S2', $fsm->deriveState('S1', ['E1', 'E2']));
-    }
+        // can always go S1 --E1--> S2
+        $op = $fsm->deriveState('S1', ['E1']);
+        self::assertTrue($op->isSuccess());
+        self::assertSame('S2', $op->getState());
 
-    /**
-     * @test
-     */
-    public function conditional_transition_based_on_a_predicate_defined_in_an_entity(): void
-    {
-        // The transition E2 is conditional on TestEntity having its optional property supplied
-        self::assertSame('S2', (new TestEntity('required', ['E1', 'E2']))->getState());
-        self::assertSame('S3', (new TestEntity('required', ['E1', 'E2'], 'optional'))->getState());
+        // can never go S2 --E2--> S3
+        $op = $fsm->deriveState('S2', ['E2']);
+        self::assertFalse($op->isSuccess());
+        self::assertSame('S2', $op->getState());
     }
 }
