@@ -5,10 +5,10 @@ namespace Pwm\SFlow;
 
 final class StateOp
 {
+    /** @var bool */
+    private $success;
     /** @var string */
     private $state;
-    /** @var string */
-    private $success;
 
     public static function success(string $state): self
     {
