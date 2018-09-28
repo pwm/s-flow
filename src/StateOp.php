@@ -9,15 +9,15 @@ final class StateOp
     private $success;
     /** @var string */
     private $state;
-    /** @var array */
+    /** @var array|string[] */
     private $events;
 
-    public static function success(string $state, array $events): self
+    public static function success(string $state, string ...$events): self
     {
         return new self(true, $state, $events);
     }
 
-    public static function failure(string $state, array $events): self
+    public static function failure(string $state, string ...$events): self
     {
         return new self(false, $state, $events);
     }
@@ -35,6 +35,11 @@ final class StateOp
     public function getEvents(): array
     {
         return $this->events;
+    }
+
+    public function getLastEvent(): string
+    {
+        return $this->events[count($this->events) - 1];
     }
 
     private function __construct(bool $success, string $state, array $events)

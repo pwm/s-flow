@@ -108,7 +108,7 @@ class TrafficLight {
 
     public function change(string ...$events): void {
         $this->colour = $this->fsm
-            ->deriveState($this->colour, $events)
+            ->deriveState($this->colour, ...$events)
             ->getState();
     }
 
@@ -117,7 +117,7 @@ class TrafficLight {
     }
 
     private function setupFSM(): FSM {
-        return (new FSM(['Red', 'Yellow', 'Green']))
+        return (new FSM('Red', 'Yellow', 'Green'))
             ->addTransition((new Transition('Go'))->from('Red')->to('Green'))
             ->addTransition((new Transition('Slow'))->from('Green')->to('Yellow'))
             ->addTransition((new Transition('Stop'))->from('Yellow')->to('Red'));
@@ -157,7 +157,7 @@ Say we want to react to a transition failure, eg. throw an exception, then we co
 
 ```php
     public function change(string ...$events): void {
-        $op = $this->fsm->deriveState($this->colour, $events);
+        $op = $this->fsm->deriveState($this->colour, ...$events);
         if (! $op->isSuccess()) {
             throw new \RuntimeException('Invalid state change attempt!');
         }
@@ -188,7 +188,7 @@ class TrafficLight {
 
     public function change(string ...$events): void {
         $this->colour = $this->fsm
-            ->deriveState($this->colour, $events)
+            ->deriveState($this->colour, ...$events)
             ->getState();
     }
 
@@ -201,7 +201,7 @@ class TrafficLight {
             return $this->model  === 'new';
         };
 
-        return (new FSM(['Red', 'Yellow', 'Green', 'RedYellow']))
+        return (new FSM('Red', 'Yellow', 'Green', 'RedYellow'))
             ->addTransition((new Transition('Prepare'))->from('Red')->given($newModel)->to('RedYellow'))
             ->addTransition((new Transition('Go'))->from('Red')->to('Green'))
             ->addTransition((new Transition('Go'))->from('RedYellow')->to('Green'))
@@ -226,6 +226,15 @@ $trafficLight = new TrafficLight(); // Red
 $trafficLight->change('Prepare'); // Still Red, it's an old model
 $trafficLight->change('Go'); // Green
 ```
+
+#### The `StateOp` type
+
+`StateOp` is the type that captures information about the result of the operations.
+
+1. `isSuccess()` - Whether the transitions were successful
+2. `getState()` - The resulting state including the last valid state upon failure
+3. `getEvents()` - The list of events that led to the current state. The last element of this list is either the last event or the first event that caused a failure. This way, upon failure, we can see which event caused it.
+4. `getLastEvent()` - Access to the last event. See above.
  
 ## How it works
 

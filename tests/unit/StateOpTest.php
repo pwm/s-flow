@@ -12,12 +12,13 @@ final class StateOpTest extends TestCase
      */
     public function it_creates_from_success(): void
     {
-        $stateOp = StateOp::success('yes', ['E1', 'E2', 'E3']);
+        $stateOp = StateOp::success('yes', 'E1', 'E2', 'E3');
 
         self::assertInstanceOf(StateOp::class, $stateOp);
         self::assertTrue($stateOp->isSuccess());
         self::assertSame('yes', $stateOp->getState());
         self::assertSame(['E1', 'E2', 'E3'], $stateOp->getEvents());
+        self::assertSame('E3', $stateOp->getLastEvent());
     }
 
     /**
@@ -25,11 +26,12 @@ final class StateOpTest extends TestCase
      */
     public function it_creates_from_failure(): void
     {
-        $stateOp = StateOp::failure('no', ['E1', 'E2', 'E3']);
+        $stateOp = StateOp::failure('no', 'E1', 'E2', 'E3');
 
         self::assertInstanceOf(StateOp::class, $stateOp);
         self::assertFalse($stateOp->isSuccess());
         self::assertSame('no', $stateOp->getState());
         self::assertSame(['E1', 'E2', 'E3'], $stateOp->getEvents());
+        self::assertSame('E3', $stateOp->getLastEvent());
     }
 }

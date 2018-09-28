@@ -15,9 +15,9 @@ class FSM
     /** @var Transition[][] */
     protected $graph = [];
 
-    public function __construct(array $states)
+    public function __construct(string ...$states)
     {
-        if (count($states) === 0) {
+        if ($states === []) {
             throw new MissingState('There must be at least one state.');
         }
 
@@ -47,21 +47,22 @@ class FSM
         return $this;
     }
 
-    public function deriveState(string $startState, array $events): StateOp
+    public function deriveState(string $startState, string ...$events): StateOp
     {
         return array_reduce($events, function (StateOp $stateOp, string $event): StateOp {
             return $stateOp->isSuccess()
                 ? $this->transition($stateOp, $event)
                 : $stateOp;
-        }, StateOp::success($startState, []));
+        }, StateOp::success($startState));
     }
 
     private function transition(StateOp $stateOp, string $event): StateOp
     {
         $from = $stateOp->getState();
+        $events = array_merge($stateOp->getEvents(), [$event]);
 
         if (! isset($this->graph[$from][$event])) {
-            return StateOp::failure($from, $stateOp->getEvents());
+            return StateOp::failure($from, ...$events);
         }
 
         $transition = $this->graph[$from][$event];
@@ -69,10 +70,10 @@ class FSM
         $condition = $transition->getCondition();
         if ($condition instanceof Closure) {
             return $condition()
-                ? StateOp::success($transition->getTo(), array_merge($stateOp->getEvents(), [$event]))
-                : StateOp::failure($from, $stateOp->getEvents());
+                ? StateOp::success($transition->getTo(), ...$events)
+                : StateOp::failure($from, ...$events);
         }
 
-        return StateOp::success($transition->getTo(), array_merge($stateOp->getEvents(), [$event]));
+        return StateOp::success($transition->getTo(), ...$events);
     }
 }
