@@ -66,26 +66,32 @@ final class FSMTest extends TestCase
         $op = $fsm->deriveState('S1', []);
         self::assertTrue($op->isSuccess());
         self::assertSame('S1', $op->getState());
+        self::assertSame([], $op->getEvents());
 
         $op = $fsm->deriveState('S1', ['E1']);
         self::assertTrue($op->isSuccess());
         self::assertSame('S2', $op->getState());
+        self::assertSame(['E1'], $op->getEvents());
 
         $op = $fsm->deriveState('S1', ['E1', 'E2']);
         self::assertTrue($op->isSuccess());
         self::assertSame('S3', $op->getState());
+        self::assertSame(['E1', 'E2'], $op->getEvents());
 
         $op = $fsm->deriveState('S2', []);
         self::assertTrue($op->isSuccess());
         self::assertSame('S2', $op->getState());
+        self::assertSame([], $op->getEvents());
 
         $op = $fsm->deriveState('S2', ['E2']);
         self::assertTrue($op->isSuccess());
         self::assertSame('S3', $op->getState());
+        self::assertSame(['E2'], $op->getEvents());
 
         $op = $fsm->deriveState('S3', []);
         self::assertTrue($op->isSuccess());
         self::assertSame('S3', $op->getState());
+        self::assertSame([], $op->getEvents());
     }
 
     /**
@@ -103,18 +109,22 @@ final class FSMTest extends TestCase
         $op = $fsm->deriveState('S1', []);
         self::assertTrue($op->isSuccess());
         self::assertSame('S1', $op->getState());
+        self::assertSame([], $op->getEvents());
 
         $op = $fsm->deriveState('S1', ['E1']);
         self::assertTrue($op->isSuccess());
         self::assertSame('S2', $op->getState());
+        self::assertSame(['E1'], $op->getEvents());
 
         $op = $fsm->deriveState('S1', ['E1', 'E1']);
         self::assertTrue($op->isSuccess());
         self::assertSame('S3', $op->getState());
+        self::assertSame(['E1', 'E1'], $op->getEvents());
 
         $op = $fsm->deriveState('S1', ['E1', 'E1', 'E1']);
         self::assertTrue($op->isSuccess());
         self::assertSame('S1', $op->getState());
+        self::assertSame(['E1', 'E1', 'E1'], $op->getEvents());
     }
 
     /**
@@ -128,6 +138,7 @@ final class FSMTest extends TestCase
         $op = $fsm->deriveState('S1', ['E1']);
         self::assertFalse($op->isSuccess());
         self::assertSame('S1', $op->getState());
+        self::assertSame([], $op->getEvents());
     }
 
     /**
@@ -146,10 +157,12 @@ final class FSMTest extends TestCase
         $op = $fsm->deriveState('S1', ['E1']);
         self::assertTrue($op->isSuccess());
         self::assertSame('S2', $op->getState());
+        self::assertSame(['E1'], $op->getEvents());
 
         // can never go S2 --E2--> S3
         $op = $fsm->deriveState('S2', ['E2']);
         self::assertFalse($op->isSuccess());
         self::assertSame('S2', $op->getState());
+        self::assertSame([], $op->getEvents());
     }
 }

@@ -51,15 +51,17 @@ class FSM
     {
         return array_reduce($events, function (StateOp $stateOp, string $event): StateOp {
             return $stateOp->isSuccess()
-                ? $this->transition($stateOp->getState(), $event)
+                ? $this->transition($stateOp, $event)
                 : $stateOp;
-        }, StateOp::success($startState));
+        }, StateOp::success($startState, []));
     }
 
-    private function transition(string $from, string $event): StateOp
+    private function transition(StateOp $stateOp, string $event): StateOp
     {
+        $from = $stateOp->getState();
+
         if (! isset($this->graph[$from][$event])) {
-            return StateOp::failure($from);
+            return StateOp::failure($from, $stateOp->getEvents());
         }
 
         $transition = $this->graph[$from][$event];
@@ -67,10 +69,10 @@ class FSM
         $condition = $transition->getCondition();
         if ($condition instanceof Closure) {
             return $condition()
-                ? StateOp::success($transition->getTo())
-                : StateOp::failure($from);
+                ? StateOp::success($transition->getTo(), array_merge($stateOp->getEvents(), [$event]))
+                : StateOp::failure($from, $stateOp->getEvents());
         }
 
-        return StateOp::success($transition->getTo());
+        return StateOp::success($transition->getTo(), array_merge($stateOp->getEvents(), [$event]));
     }
 }

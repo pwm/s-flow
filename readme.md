@@ -55,7 +55,7 @@ class TrafficLight {
     private $colour;
 
     public function __construct() {
-        $this->colour = 'Red';
+        $this->colour = 'Red'; // Our initial state
     }
 
     public function change(string $colour): void {
@@ -151,7 +151,7 @@ $trafficLight->change('Go', 'Slow', 'Stop'); // Red again
 
 #### The result of a state change
 
-`deriveState()` returns a `StateOp` object, which is a wrapper for the resulting state coupled with an indicator whether our transition(s) succeeded or failed. This is why in the above example we call `getState()` on the result in our `change()` function.
+`deriveState()` returns a `StateOp` type, a record for the resulting state and events led to it coupled with an indicator whether our transition(s) succeeded or failed. This is why in the above example we call `getState()` on the result in our `change()` function.
 
 Say we want to react to a transition failure, eg. throw an exception, then we could just modify our `change()` method:
 
@@ -240,6 +240,7 @@ Transitions can be made conditional. A conditional transition is one with a corr
 	$ vendor/bin/phpunit
 	$ composer phpcs
 	$ composer phpstan
+	$ composer infection
 
 ## Changelog
 
