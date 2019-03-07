@@ -5,6 +5,6 @@ namespace Pwm\SFlow\Exception;
 
 use RuntimeException;
 
-class IncompleteTransition extends RuntimeException
+class DuplicateState extends RuntimeException
 {
 }

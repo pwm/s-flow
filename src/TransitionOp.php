@@ -3,21 +3,21 @@ declare(strict_types=1);
 
 namespace Pwm\SFlow;
 
-final class StateOp
+final class TransitionOp
 {
     /** @var bool */
     private $success;
-    /** @var string */
+    /** @var State */
     private $state;
-    /** @var array|string[] */
+    /** @var Events */
     private $events;
 
-    public static function success(string $state, string ...$events): self
+    public static function success(State $state, Events $events): self
     {
         return new self(true, $state, $events);
     }
 
-    public static function failure(string $state, string ...$events): self
+    public static function failure(State $state, Events $events): self
     {
         return new self(false, $state, $events);
     }
@@ -27,23 +27,26 @@ final class StateOp
         return $this->success;
     }
 
-    public function getState(): string
+    public function getState(): State
     {
         return $this->state;
     }
 
-    public function getEvents(): array
+    public function getEvents(): Events
     {
         return $this->events;
     }
 
-    public function getLastEvent(): string
+    public function getLastEvent(): ?Event
     {
-        return $this->events[count($this->events) - 1];
+        return $this->events->toList()[$this->events->count() - 1] ?? null;
     }
 
-    private function __construct(bool $success, string $state, array $events)
-    {
+    private function __construct(
+        bool $success,
+        State $state,
+        Events $events
+    ) {
         $this->success = $success;
         $this->state = $state;
         $this->events = $events;

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<psalm
+    totallyTyped="true"
+    useDocblockTypes="false"
+    useDocblockPropertyTypes="true"
+    strictBinaryOperands="true"
+    ignoreInternalFunctionFalseReturn="false"
+    ignoreInternalFunctionNullReturn="false"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config"
+>
+    <projectFiles>
+        <directory name="src" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <LessSpecificReturnType errorLevel="info" />
+        <MissingParamType errorLevel="info" />
+        <MissingReturnType errorLevel="info" />
+    </issueHandlers>
+</psalm>

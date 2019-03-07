@@ -3,77 +3,35 @@ declare(strict_types=1);
 
 namespace Pwm\SFlow;
 
-use Closure;
-use Pwm\SFlow\Exception\DuplicateEvent;
-use Pwm\SFlow\Exception\MissingState;
 use function array_reduce;
-use function count;
-use function sprintf;
 
-class FSM
+final class FSM
 {
-    /** @var Transition[][] */
-    protected $graph = [];
+    /** @var Graph */
+    private $graph;
 
-    public function __construct(string ...$states)
+    public function __construct(Graph $graph)
     {
-        if ($states === []) {
-            throw new MissingState('There must be at least one state.');
-        }
-
-        foreach ($states as $state) {
-            $this->graph[$state] = [];
-        }
+        $this->graph = $graph;
     }
 
-    public function addTransition(Transition $transition): self
+    public function run(State $state, Events $events): TransitionOp
     {
-        $event = $transition->getEvent();
-        $from = $transition->getFrom();
-        $to = $transition->getTo();
-
-        if (! isset($this->graph[$from])) {
-            throw new MissingState(sprintf('From state %s is not an element of the defined states.', $from));
-        }
-        if (! isset($this->graph[$to])) {
-            throw new MissingState(sprintf('To state %s is not an element of the defined states.', $to));
-        }
-        if (isset($this->graph[$from][$event])) {
-            throw new DuplicateEvent(sprintf('Duplicate event %s between states %s and %s.', $event, $from, $to));
-        }
-
-        $this->graph[$from][$event] = $transition;
-
-        return $this;
+        return array_reduce($events->toList(), function (TransitionOp $transitionOp, Event $event): TransitionOp {
+            return $transitionOp->isSuccess()
+                ? $this->transition($transitionOp, $event)
+                : $transitionOp;
+        }, TransitionOp::success($state, new Events()));
     }
 
-    public function deriveState(string $startState, string ...$events): StateOp
+    private function transition(TransitionOp $transitionOp, Event $event): TransitionOp
     {
-        return array_reduce($events, function (StateOp $stateOp, string $event): StateOp {
-            return $stateOp->isSuccess()
-                ? $this->transition($stateOp, $event)
-                : $stateOp;
-        }, StateOp::success($startState));
-    }
+        $state = $transitionOp->getState();
+        $events = $transitionOp->getEvents()->addEvent($event);
+        $transition = $this->graph->getTransition($state, $event);
 
-    private function transition(StateOp $stateOp, string $event): StateOp
-    {
-        $from = $stateOp->getState();
-        $events = array_merge($stateOp->getEvents(), [$event]);
-
-        if (! isset($this->graph[$from][$event])) {
-            return StateOp::failure($from, ...$events);
-        }
-
-        $transition = $this->graph[$from][$event];
-
-        $condition = $transition->getCondition();
-        if ($condition instanceof Closure) {
-            return $condition()
-                ? StateOp::success($transition->getTo(), ...$events)
-                : StateOp::failure($from, ...$events);
-        }
-
-        return StateOp::success($transition->getTo(), ...$events);
+        return $transition instanceof Transition
+            ? TransitionOp::success($transition($state, $event), $events)
+            : TransitionOp::failure($state, $events);
     }
 }
