@@ -5,6 +5,7 @@
     "keywords": [
         "fsm",
         "state-machine",
+        "workflow",
         "event-sourcing"
     ],
     "homepage": "https://github.com/pwm/s-flow",
@@ -37,7 +38,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "4.0-dev"
         }
     },
     "scripts": {
