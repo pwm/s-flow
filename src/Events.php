@@ -18,6 +18,7 @@ final class Events implements Countable, IteratorAggregate
 
     public function __construct(Event ...$events)
     {
+        /** @var Event[] events */
         $this->events = array_values($events);
         $this->count = count($this->events);
     }

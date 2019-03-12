@@ -16,10 +16,4 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
-
-    <issueHandlers>
-        <LessSpecificReturnType errorLevel="info" />
-        <MissingParamType errorLevel="info" />
-        <MissingReturnType errorLevel="info" />
-    </issueHandlers>
 </psalm>

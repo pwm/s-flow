@@ -39,7 +39,9 @@ final class TransitionOp
 
     public function getLastEvent(): ?Event
     {
-        return $this->events->toList()[$this->events->count() - 1] ?? null;
+        /** @var Event[] $events */
+        $events = $this->events->toList();
+        return $events[$this->events->count() - 1] ?? null;
     }
 
     private function __construct(
