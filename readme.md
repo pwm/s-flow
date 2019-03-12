@@ -6,7 +6,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7d68d8bee2ecbcf3277c/test_coverage)](https://codeclimate.com/github/pwm/s-flow/test_coverage)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-S-Flow is a lightweight library for defining finite state machines (FSM). Once defined the machine can be run with a start state and a list of events to derive some end state. One of the main design goals of S-Flow was to be able to define FSMs declaratively as a single top level definition. This makes the structure of the underlying graph explicit which greatly helps with understanding and maintenance. FSMs have a wide variety of usage, for example they can be used to define workflows.
+S-Flow is a lightweight library for defining finite state machines (FSM). Once defined the machine can be run with a start state and a sequence of events to derive some end state. One of the main design goals of S-Flow was to be able to define FSMs declaratively as a single top level definition. This makes the structure of the underlying graph explicit which greatly helps with understanding and maintenance. FSMs have a wide variety of usage, for example they can be used to define workflows.
 
 ## Table of Contents
 
@@ -56,47 +56,48 @@ PHP 7.2+
 There is a fully worked example under `tests/ShoppingCart` that simulates the process of purchasing items from an imaginary shop. Below is the top level definition of the FSM. For the rest of the code please check `tests/ShoppingCart`.
 
 ```php
-// The list of state names that identify the states
+// A list of state names that identify the states
 $stateNames = [
-    State\NoItems::name(),
-    State\HasItems::name(),
-    State\NoCard::name(),
-    State\CardSelected::name(),
-    State\CardConfirmed::name(),
-    State\OrderPlaced::name(),
+    NoItems::name(),
+    HasItems::name(),
+    NoCard::name(),
+    CardSelected::name(),
+    CardConfirmed::name(),
+    OrderPlaced::name(),
 ];
 
-// The list of arrows between states, labelled by event names, capturing their respective transition functions.
+// A list of arrows labelled by event names
+// An arrow goes from a start state via a transition to an end state
 $arrows = [
-    (new Arrow(Event\Select::name()))->from(State\NoItems::name())->via(new Transition\AddFirstItem),
-    (new Arrow(Event\Select::name()))->from(State\HasItems::name())->via(new Transition\AddItem),
-    (new Arrow(Event\Checkout::name()))->from(State\HasItems::name())->via(new Transition\DoCheckout),
-    (new Arrow(Event\SelectCard::name()))->from(State\NoCard::name())->via(new Transition\DoSelectCard),
-    (new Arrow(Event\Confirm::name()))->from(State\CardSelected::name())->via(new Transition\ConfirmCard),
-    (new Arrow(Event\PlaceOrder::name()))->from(State\CardConfirmed::name())->via(new Transition\DoPlaceOrder),
-    (new Arrow(Event\Cancel::name()))->from(State\NoCard::name())->via(new Transition\DoCancel),
-    (new Arrow(Event\Cancel::name()))->from(State\CardSelected::name())->via(new Transition\DoCancel),
-    (new Arrow(Event\Cancel::name()))->from(State\CardConfirmed::name())->via(new Transition\DoCancel),
+    (new Arrow(Select::name()))->from(NoItems::name())->via(new AddFirstItem),
+    (new Arrow(Select::name()))->from(HasItems::name())->via(new AddItem),
+    (new Arrow(Checkout::name()))->from(HasItems::name())->via(new DoCheckout),
+    (new Arrow(SelectCard::name()))->from(NoCard::name())->via(new DoSelectCard),
+    (new Arrow(Confirm::name()))->from(CardSelected::name())->via(new ConfirmCard),
+    (new Arrow(PlaceOrder::name()))->from(CardConfirmed::name())->via(new DoPlaceOrder),
+    (new Arrow(Cancel::name()))->from(NoCard::name())->via(new DoCancel),
+    (new Arrow(Cancel::name()))->from(CardSelected::name())->via(new DoCancel),
+    (new Arrow(Cancel::name()))->from(CardConfirmed::name())->via(new DoCancel),
 ];
 
-// Build a graph from the above building blocks
+// Build a graph from the above state names and arrows
 $graph = (new Graph(...$stateNames))->drawArrows(...$arrows);
 
 // Build the FSM using the graph and run a shopping simulation
 $transitionOp = (new FSM($graph))->run(
-    new State\NoItems(),
+    new NoItems(),
     new Events(
-        new Event\Select(new Item('foo')),
-        new Event\Select(new Item('bar')),
-        new Event\Select(new Item('baz')),
-        new Event\Checkout(),
-        new Event\SelectCard(new Card('Visa', '1234567812345678')),
-        new Event\Confirm(),
-        new Event\PlaceOrder()
+        new Select(new Item('foo')),
+        new Select(new Item('bar')),
+        new Select(new Item('baz')),
+        new Checkout(),
+        new SelectCard(new Card('Visa', '1234567812345678')),
+        new Confirm(),
+        new PlaceOrder()
     )
 );
 
-// Observe results
+// Observe the results
 assert($transitionOp->isSuccess() === true);
 assert($transitionOp->getState() instanceof OrderPlaced);
 assert($transitionOp->getLastEvent() instanceof PlaceOrder);
@@ -106,11 +107,11 @@ assert($transitionOp->getLastEvent() instanceof PlaceOrder);
 
 A state machine is defined as a directed graph. Vertices of this graph are called states and arrows between them are called transitions. Transitions are labelled so that they can be identified. We call those labels events.
 
-Running the machine, ie. deriving an end state given a start state and a list of events, means walking the graph from the start state via a set of transitions leading to the desired end state. In the end we either reach it or stop when there is no way forward.
+Running the machine, ie. deriving an end state given a start state and a sequence of events, means walking the graph from the start state via a sequence of transitions leading to the desired end state. In the end we either reach it or stop when there is no way forward.
 
 Transitions, acting as the arrows of the graph, are functions of type `State -> Event -> State`. They are uniquely identified by a `(State, Event)` pair, ie. given a state and an event (which is the label of the arrow) we can get the corresponding transition function, if it exists. The the absence of a transition function automatically results in a failed transition.
 
-Success and failure is captured using the `TransitionOp` type It also keeps track of the current state as well as the sequence of events leading up to it.
+Success and failure is captured using the `TransitionOp` type. It also keeps track of the current state as well as the sequence of events leading up to it.
 
 ## Tests
 
