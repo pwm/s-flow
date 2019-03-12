@@ -53,7 +53,7 @@ PHP 7.2+
 
 ## Usage
 
-There is a fully worked example under `tests/ShoppingCart` that simulates the process of purchasing items from an imaginary shop. Below is the top level definition of the FSM. For the rest of the code please check `tests/ShoppingCart`.
+There is a fully worked example under [tests/unit/ShoppingCart](tests/unit/ShoppingCart) that simulates the process of purchasing items from an imaginary shop. Below is the definition of the FSM from it:
 
 ```php
 // A list of state names that identify the states
