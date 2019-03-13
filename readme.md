@@ -58,26 +58,26 @@ There is a fully worked example under [tests/unit/ShoppingCart](tests/unit/Shopp
 ```php
 // A list of state names that identify the states
 $stateNames = [
-    NoItems::name(),
-    HasItems::name(),
-    NoCard::name(),
-    CardSelected::name(),
-    CardConfirmed::name(),
-    OrderPlaced::name(),
+    S\NoItems::name(),
+    S\HasItems::name(),
+    S\NoCard::name(),
+    S\CardSelected::name(),
+    S\CardConfirmed::name(),
+    S\OrderPlaced::name(),
 ];
 
 // A list of arrows labelled by event names
 // An arrow goes from a start state via a transition to an end state
 $arrows = [
-    (new Arrow(Select::name()))->from(NoItems::name())->via(new AddFirstItem),
-    (new Arrow(Select::name()))->from(HasItems::name())->via(new AddItem),
-    (new Arrow(Checkout::name()))->from(HasItems::name())->via(new DoCheckout),
-    (new Arrow(SelectCard::name()))->from(NoCard::name())->via(new DoSelectCard),
-    (new Arrow(Confirm::name()))->from(CardSelected::name())->via(new ConfirmCard),
-    (new Arrow(PlaceOrder::name()))->from(CardConfirmed::name())->via(new DoPlaceOrder),
-    (new Arrow(Cancel::name()))->from(NoCard::name())->via(new DoCancel),
-    (new Arrow(Cancel::name()))->from(CardSelected::name())->via(new DoCancel),
-    (new Arrow(Cancel::name()))->from(CardConfirmed::name())->via(new DoCancel),
+    (new Arrow(E\Select::name()))->from(S\NoItems::name())->via(new T\AddFirstItem),
+    (new Arrow(E\Select::name()))->from(S\HasItems::name())->via(new T\AddItem),
+    (new Arrow(E\Checkout::name()))->from(S\HasItems::name())->via(new T\DoCheckout),
+    (new Arrow(E\SelectCard::name()))->from(S\NoCard::name())->via(new T\DoSelectCard),
+    (new Arrow(E\Confirm::name()))->from(S\CardSelected::name())->via(new T\ConfirmCard),
+    (new Arrow(E\PlaceOrder::name()))->from(S\CardConfirmed::name())->via(new T\DoPlaceOrder),
+    (new Arrow(E\Cancel::name()))->from(S\NoCard::name())->via(new T\DoCancel),
+    (new Arrow(E\Cancel::name()))->from(S\CardSelected::name())->via(new T\DoCancel),
+    (new Arrow(E\Cancel::name()))->from(S\CardConfirmed::name())->via(new T\DoCancel),
 ];
 
 // Build a graph from the above state names and arrows
@@ -85,22 +85,22 @@ $graph = (new Graph(...$stateNames))->drawArrows(...$arrows);
 
 // Build the FSM using the graph and run a shopping simulation
 $transitionOp = (new FSM($graph))->run(
-    new NoItems(),
+    new S\NoItems,
     new Events(
-        new Select(new Item('foo')),
-        new Select(new Item('bar')),
-        new Select(new Item('baz')),
-        new Checkout(),
-        new SelectCard(new Card('Visa', '1234567812345678')),
-        new Confirm(),
-        new PlaceOrder()
+        new E\Select(new Item('foo')),
+        new E\Select(new Item('bar')),
+        new E\Select(new Item('baz')),
+        new E\Checkout,
+        new E\SelectCard(new Card('Visa', '1234567812345678')),
+        new E\Confirm,
+        new E\PlaceOrder
     )
 );
 
 // Observe the results
 assert($transitionOp->isSuccess() === true);
-assert($transitionOp->getState() instanceof OrderPlaced);
-assert($transitionOp->getLastEvent() instanceof PlaceOrder);
+assert($transitionOp->getState() instanceof S\OrderPlaced);
+assert($transitionOp->getLastEvent() instanceof E\PlaceOrder);
 ```
  
 ## How it works
