@@ -6,7 +6,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7d68d8bee2ecbcf3277c/test_coverage)](https://codeclimate.com/github/pwm/s-flow/test_coverage)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-S-Flow is a lightweight library for defining finite state machines (FSM). Once defined the machine can be run with a start state and a sequence of events to derive some end state. One of the main design goals of S-Flow was to be able to define FSMs declaratively as a single top level definition. This makes the structure of the underlying graph explicit which greatly helps with understanding and maintenance. FSMs have a wide variety of usage, for example they can be used to define workflows.
+S-Flow is a lightweight library for defining finite state machines (FSM). Once defined the machine can be run by giving it a start state and a sequence of events to derive some end state. One of the main design goals of S-Flow was to be able to define FSMs declaratively as a single top level definition. This makes the structure of the underlying graph clear and explicit which in turn helps with understanding and maintenance. S-Flow can be used for many things, eg. to define workflows or to build event sourced systems.
 
 ## Table of Contents
 
@@ -21,7 +21,7 @@ S-Flow is a lightweight library for defining finite state machines (FSM). Once d
 
 ## Why
 
-Have you ever named a variable, object property or database field *"status"* or *"state"*? If yes then read on...
+If you ever named a variable, object property or database field *"status"* or *"state"* then read on...
 
 #### Claim #1:
 
@@ -56,6 +56,8 @@ PHP 7.2+
 There is a fully worked example under [tests/unit/ShoppingCart](tests/unit/ShoppingCart) that simulates the process of purchasing items from an imaginary shop. Below is the definition of the FSM from it:
 
 ```php
+// S, E and T are short for State, Event and Transition
+
 // A list of state names that identify the states
 $stateNames = [
     S\NoItems::name(),
@@ -80,11 +82,14 @@ $arrows = [
     (new Arrow(E\Cancel::name()))->from(S\CardConfirmed::name())->via(new T\DoCancel),
 ];
 
-// Build a graph from the above state names and arrows
+// Build a graph from the above
 $graph = (new Graph(...$stateNames))->drawArrows(...$arrows);
 
-// Build the FSM using the graph and run a shopping simulation
-$transitionOp = (new FSM($graph))->run(
+// Build an FSM using the graph
+$shoppingCartFSM = new FSM($graph);
+
+// Run a simulation of purchasing 3 items
+$result = $shoppingCartFSM->run(
     new S\NoItems,
     new Events(
         new E\Select(new Item('foo')),
@@ -98,9 +103,9 @@ $transitionOp = (new FSM($graph))->run(
 );
 
 // Observe the results
-assert($transitionOp->isSuccess() === true);
-assert($transitionOp->getState() instanceof S\OrderPlaced);
-assert($transitionOp->getLastEvent() instanceof E\PlaceOrder);
+assert($result->isSuccess() === true);
+assert($result->getState() instanceof S\OrderPlaced);
+assert($result->getLastEvent() instanceof E\PlaceOrder);
 ```
  
 ## How it works
