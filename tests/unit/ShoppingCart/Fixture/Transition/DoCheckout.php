@@ -19,10 +19,10 @@ final class DoCheckout implements Transition
          * @var HasItems $state
          * @var Checkout $event
          */
-        return $this->transition($state, $event);
+        return self::transition($state, $event);
     }
 
-    public function transition(HasItems $state, Checkout $event): NoCard
+    private static function transition(HasItems $state, Checkout $event): NoCard
     {
         return new NoCard($state->getItems());
     }

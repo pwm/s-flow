@@ -19,10 +19,10 @@ final class ConfirmCard implements Transition
          * @var CardSelected $state
          * @var Confirm $event
          */
-        return $this->transition($state, $event);
+        return self::transition($state, $event);
     }
 
-    public function transition(CardSelected $state, Confirm $event): CardConfirmed
+    private static function transition(CardSelected $state, Confirm $event): CardConfirmed
     {
         return new CardConfirmed($state->getItems(), $state->getCard());
     }

@@ -19,10 +19,10 @@ final class DoSelectCard implements Transition
          * @var NoCard $state
          * @var SelectCard $event
          */
-        return $this->transition($state, $event);
+        return self::transition($state, $event);
     }
 
-    public function transition(NoCard $state, SelectCard $event): CardSelected
+    private static function transition(NoCard $state, SelectCard $event): CardSelected
     {
         return new CardSelected($state->getItems(), $event->getCard());
     }

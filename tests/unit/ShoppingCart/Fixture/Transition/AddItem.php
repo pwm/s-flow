@@ -19,10 +19,10 @@ final class AddItem implements Transition
          * @var HasItems $state
          * @var Select $event
          */
-        return $this->transition($state, $event);
+        return self::transition($state, $event);
     }
 
-    public function transition(HasItems $state, Select $event): HasItems
+    private static function transition(HasItems $state, Select $event): HasItems
     {
         return new HasItems(new Items($event->getItem(), ...$state->getItems()));
     }

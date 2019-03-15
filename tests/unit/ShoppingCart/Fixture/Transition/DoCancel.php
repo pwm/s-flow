@@ -22,11 +22,11 @@ final class DoCancel implements Transition
          * @var State $state
          * @var Cancel $event
          */
-        return $this->transition($state, $event);
+        return self::transition($state, $event);
 
     }
 
-    public function transition(State $state, Cancel $event): State
+    private static function transition(State $state, Cancel $event): State
     {
         if ($state instanceof NoCard ||
             $state instanceof CardSelected ||

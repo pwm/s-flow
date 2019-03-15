@@ -19,10 +19,10 @@ final class DoPlaceOrder implements Transition
          * @var CardConfirmed $state
          * @var PlaceOrder $event
          */
-        return $this->transition($state, $event);
+        return self::transition($state, $event);
     }
 
-    public function transition(CardConfirmed $state, PlaceOrder $event): OrderPlaced
+    private static function transition(CardConfirmed $state, PlaceOrder $event): OrderPlaced
     {
         return new OrderPlaced();
     }

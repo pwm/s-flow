@@ -20,10 +20,10 @@ final class AddFirstItem implements Transition
          * @var NoItems $state
          * @var Select $event
          */
-        return $this->transition($state, $event);
+        return self::transition($state, $event);
     }
 
-    private function transition(NoItems $state, Select $event): HasItems
+    private static function transition(NoItems $state, Select $event): HasItems
     {
         return new HasItems(new Items($event->getItem()));
     }
