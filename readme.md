@@ -129,7 +129,7 @@ Success and failure is captured using the `TransitionOp` type. It also keeps tra
 
 ## Todo
 
-Once return type covariance lands in PHP ([as part of this RFC](https://wiki.php.net/rfc/covariant-returns-and-contravariant-parameters)) we will be able to specify the return type of `__invoke` in `Transition` implementations. Currently it's best to use docblock type hints as per the shopping cart example.
+Once return type covariance lands in PHP ([as part of this RFC](https://wiki.php.net/rfc/covariant-returns-and-contravariant-parameters)) we will be able to specify the actual return type of `__invoke` in `Transition` implementations. This would enable to easily dump the FSM into various text formats, eg. as a DOT file, etc...
 
 ## Changelog
 
