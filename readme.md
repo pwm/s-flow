@@ -16,6 +16,7 @@ S-Flow is a lightweight library for defining finite state machines (FSM). Once d
 * [Usage](#usage)
 * [How it works](#how-it-works)
 * [Tests](#tests)
+* [Todo](#todo)
 * [Changelog](#changelog)
 * [Licence](#licence)
 
@@ -114,7 +115,7 @@ A state machine is defined as a directed graph. Vertices of this graph are calle
 
 Running the machine, ie. deriving an end state given a start state and a sequence of events, means walking the graph from the start state via a sequence of transitions leading to the desired end state. In the end we either reach it or stop when there is no way forward.
 
-Transitions, acting as the arrows of the graph, are functions of type `State -> Event -> State`. They are uniquely identified by a `(State, Event)` pair, ie. given a state and an event (which is the label of the arrow) we can get the corresponding transition function, if it exists. The the absence of a transition function automatically results in a failed transition.
+Transitions, acting as the arrows of the graph, are functions of type `(State, Event) -> State`. They are uniquely identified by a `(StateName, EventName)` pair, ie. given a state name and an event name (which is the label of the arrow) we can get the corresponding transition function, if it exists. The the absence of the transition function automatically results in a failed transition, keeping the current state.
 
 Success and failure is captured using the `TransitionOp` type. It also keeps track of the current state as well as the sequence of events leading up to it.
 
@@ -125,6 +126,10 @@ Success and failure is captured using the `TransitionOp` type. It also keeps tra
 	$ composer phpstan
 	$ composer psalm
 	$ composer infection
+
+## Todo
+
+Once return type covariance lands in PHP ([as part of this RFC](https://wiki.php.net/rfc/covariant-returns-and-contravariant-parameters)) we will be able to specify the return type of `__invoke` in `Transition` implementations. Currently it's best to use docblock type hints as per the shopping cart example.
 
 ## Changelog
 
